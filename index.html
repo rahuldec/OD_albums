@@ -284,6 +284,31 @@
     font-size: 0.9rem;
   }
 
+  .stats-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    animation: fade-up 0.5s cubic-bezier(.22,.68,0,1.2) 0.2s both;
+  }
+
+  .stats-item {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .stats-dot {
+    font-size: 0.75rem;
+    color: var(--accent);
+    opacity: 0.6;
+    line-height: 1;
+  }
+
   .page-toolbar {
     display: flex;
     align-items: center;
@@ -770,6 +795,13 @@
 <!-- Page -->
 <div class="page">
   <p class="page-sub">All our shared memories, in one place.</p>
+  <div class="stats-strip" id="statsStrip" hidden>
+    <span class="stats-item" id="statAlbums"></span>
+    <span class="stats-dot">·</span>
+    <span class="stats-item" id="statLocations"></span>
+    <span class="stats-dot">·</span>
+    <span class="stats-item" id="statYears"></span>
+  </div>
 
   <!-- Search -->
   <div class="search-wrap">
@@ -1067,6 +1099,14 @@
 
       stateEl.hidden = true;
       countEl.textContent = `${allAlbums.length} album${allAlbums.length !== 1 ? 's' : ''}`;
+
+      // Stats strip
+      const uniqueLocations = new Set(allAlbums.map(a => a.location || '').filter(Boolean)).size;
+      const uniqueYears     = new Set(allAlbums.map(a => getYear(a))).size;
+      document.getElementById('statAlbums').textContent    = `${allAlbums.length} album${allAlbums.length !== 1 ? 's' : ''}`;
+      document.getElementById('statLocations').textContent = `${uniqueLocations} location${uniqueLocations !== 1 ? 's' : ''}`;
+      document.getElementById('statYears').textContent     = `${uniqueYears} year${uniqueYears !== 1 ? 's' : ''}`;
+      document.getElementById('statsStrip').hidden = false;
 
       buildFilterTabs();
       renderTimeline(allAlbums);

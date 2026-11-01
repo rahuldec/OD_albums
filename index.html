@@ -577,8 +577,8 @@
     return m ? { name: m[1].trim(), year: m[2] } : { name: label, year: null };
   }
 
-  function makeCard({ label, link }) {
-    const { name, year } = splitLabel(label);
+  function makeCard({ label, link, year: yearCol, location: loc }) {
+    const { name, year } = splitLabel(label, yearCol);
     const { grad, emoji } = themeFor(label);
     const a = document.createElement('a');
     a.className = 'card';

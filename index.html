@@ -19,6 +19,36 @@
     color-scheme: light;
   }
 
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #141210;
+      --nav-bg:      #1c1917;
+      --card-bg:     #1c1917;
+      --border:      #2e2a26;
+      --fg:          #f0ece6;
+      --fg-mid:      #a09890;
+      --fg-dim:      #6b6560;
+      --accent:      #f97316;
+      --accent-soft: #2a1500;
+      --accent-text: #fb923c;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:          #141210;
+    --nav-bg:      #1c1917;
+    --card-bg:     #1c1917;
+    --border:      #2e2a26;
+    --fg:          #f0ece6;
+    --fg-mid:      #a09890;
+    --fg-dim:      #6b6560;
+    --accent:      #f97316;
+    --accent-soft: #2a1500;
+    --accent-text: #fb923c;
+    color-scheme: dark;
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   [hidden] { display: none !important; }
 
@@ -89,6 +119,29 @@
   }
 
   .nav-spacer { flex: 1; }
+
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: none;
+    color: var(--fg-mid);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  /* show sun in dark mode, moon in light mode */
+  .icon-moon { display: block; }
+  .icon-sun  { display: none; }
+  :root[data-theme="dark"] .icon-moon { display: none; }
+  :root[data-theme="dark"] .icon-sun  { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .icon-moon { display: none; }
+    :root:not([data-theme="light"]) .icon-sun  { display: block; }
+  }
 
 
 
@@ -702,7 +755,15 @@
       </div>
     </a>
     <div class="nav-spacer"></div>
-
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+      <svg class="icon-sun" width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.41 1.41M13.36 13.36l1.41 1.41M3.22 14.78l1.41-1.41M13.36 4.64l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <svg class="icon-moon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M15 10.5A7 7 0 0 1 7.5 3a7 7 0 1 0 7.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </div>
 </nav>
 
@@ -1014,6 +1075,21 @@
       stateEl.innerHTML = `<span style="font-size:1.75rem">⚠️</span><span style="color:#dc2626">Could not load albums<br><small style="color:var(--fg-mid)">${err.message}</small></span>`;
     }
   }
+
+  // Dark mode toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  try {
+    const saved = localStorage.getItem('od-theme');
+    if (saved) root.dataset.theme = saved;
+  } catch {}
+  themeToggle.addEventListener('click', () => {
+    const isDark = root.dataset.theme === 'dark' ||
+      (!root.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const next = isDark ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('od-theme', next); } catch {}
+  });
 
   // Search wiring
   const searchInput = document.getElementById('searchInput');

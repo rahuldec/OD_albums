@@ -281,13 +281,20 @@
     inset: 0;
   }
 
-  .card-emoji {
+  .card-place {
     position: relative;
     z-index: 1;
-    font-size: 2.5rem;
-    line-height: 1;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,.3));
-    user-select: none;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-align: center;
+    padding: 0 16px;
+    line-height: 1.15;
+    text-shadow: 0 2px 12px rgba(0,0,0,.35);
+    word-break: break-word;
+    max-width: 90%;
   }
 
   .card-body {
@@ -413,9 +420,10 @@
     transform: translateY(0);
   }
 
-  /* Emoji floats up on hover */
-  .card:hover .card-emoji {
-    animation: float 1.6s ease-in-out infinite;
+  /* Location name lifts slightly on hover */
+  .card:hover .card-place {
+    transform: translateY(-3px);
+    transition: transform 0.3s ease;
   }
 
   /* Gradient zooms slightly on hover */

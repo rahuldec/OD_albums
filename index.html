@@ -464,11 +464,29 @@
   .card-grad {
     position: absolute;
     inset: 0;
+    transition: transform 0.6s cubic-bezier(.22,.68,0,1.2);
+  }
+
+  .card:hover .card-grad {
+    transform: scale(1.06);
+  }
+
+  /* grain texture overlay */
+  .card-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 220px 220px;
+    mix-blend-mode: overlay;
+    opacity: 0.22;
+    pointer-events: none;
   }
 
   .card-place {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     font-family: Helvetica, Arial, sans-serif;
     font-style: italic;
     font-size: clamp(1.1rem, 3.5vw, 1.6rem);
@@ -858,16 +876,38 @@
   const CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6Ezsy7Uw7n_CrGdToq2eVvDNS7tWF8L2H3DDyMWL2lk0LTrQEZxV_GRCzpL_vCyqkOXZv16BwgqIQ/pub?output=csv';
 
   const THEMES = [
-    { keys: ['holi'],                                          grad: 'linear-gradient(140deg,#f9a8d4,#fde68a,#86efac,#93c5fd)', emoji: '🌈' },
-    { keys: ['kasol','manali','trek','hill','mountain','summer'],       grad: 'linear-gradient(140deg,#052e16,#14532d,#4ade80)',          emoji: '🏔️' },
-    { keys: ['diwali','deepawali','deepavali'],                grad: 'linear-gradient(140deg,#713f12,#d97706,#fde68a)',          emoji: '🪔' },
-    { keys: ['christmas','xmas','new year'],                   grad: 'linear-gradient(140deg,#14532d,#dc2626,#fde68a)',          emoji: '🎄' },
-    { keys: ['beach','goa','sea','ocean'],                     grad: 'linear-gradient(140deg,#0c4a6e,#0284c7,#7dd3fc)',          emoji: '🌊' },
-    { keys: ['eid','ramadan'],                                 grad: 'linear-gradient(140deg,#052e16,#059669,#a7f3d0)',          emoji: '🌙' },
-    { keys: ['birthday','bday'],                               grad: 'linear-gradient(140deg,#4a044e,#a21caf,#f0abfc)',          emoji: '🎂' },
-    { keys: ['office','team','town hall','townhall','annual'], grad: 'linear-gradient(140deg,#1e1b4b,#3730a3,#818cf8)',          emoji: '📸' },
+    { keys: ['holi'],
+      grad: 'radial-gradient(ellipse at 20% 30%,#f9a8d4 0%,transparent 60%),radial-gradient(ellipse at 80% 15%,#fde68a 0%,transparent 55%),radial-gradient(ellipse at 55% 85%,#86efac 0%,transparent 55%),radial-gradient(ellipse at 10% 80%,#93c5fd 0%,transparent 50%),#f0e4ff',
+      emoji: '🌈' },
+    { keys: ['kasol','manali','trek','hill','mountain'],
+      grad: 'radial-gradient(ellipse at 15% 20%,#052e16 0%,transparent 55%),radial-gradient(ellipse at 75% 10%,#166534 0%,transparent 50%),radial-gradient(ellipse at 50% 90%,#4ade80 0%,transparent 55%),radial-gradient(ellipse at 85% 75%,#15803d 0%,transparent 45%),#071e0e',
+      emoji: '🏔️' },
+    { keys: ['summer'],
+      grad: 'radial-gradient(ellipse at 10% 20%,#0ea5e9 0%,transparent 55%),radial-gradient(ellipse at 80% 10%,#38bdf8 0%,transparent 50%),radial-gradient(ellipse at 60% 80%,#fde68a 0%,transparent 55%),radial-gradient(ellipse at 20% 85%,#f97316 0%,transparent 45%),#1e3a5f',
+      emoji: '☀️' },
+    { keys: ['diwali','deepawali','deepavali'],
+      grad: 'radial-gradient(ellipse at 20% 25%,#92400e 0%,transparent 55%),radial-gradient(ellipse at 75% 15%,#d97706 0%,transparent 50%),radial-gradient(ellipse at 50% 85%,#fde68a 0%,transparent 55%),radial-gradient(ellipse at 85% 75%,#b45309 0%,transparent 45%),#3a1800',
+      emoji: '🪔' },
+    { keys: ['christmas','xmas','new year'],
+      grad: 'radial-gradient(ellipse at 15% 20%,#14532d 0%,transparent 55%),radial-gradient(ellipse at 80% 15%,#dc2626 0%,transparent 50%),radial-gradient(ellipse at 50% 85%,#fde68a 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#16a34a 0%,transparent 45%),#0f1e12',
+      emoji: '🎄' },
+    { keys: ['beach','goa','sea','ocean'],
+      grad: 'radial-gradient(ellipse at 15% 20%,#0c4a6e 0%,transparent 55%),radial-gradient(ellipse at 80% 10%,#0ea5e9 0%,transparent 50%),radial-gradient(ellipse at 55% 85%,#7dd3fc 0%,transparent 55%),radial-gradient(ellipse at 85% 70%,#0369a1 0%,transparent 45%),#082032',
+      emoji: '🌊' },
+    { keys: ['eid','ramadan'],
+      grad: 'radial-gradient(ellipse at 20% 25%,#052e16 0%,transparent 55%),radial-gradient(ellipse at 75% 15%,#059669 0%,transparent 50%),radial-gradient(ellipse at 50% 85%,#a7f3d0 0%,transparent 55%),radial-gradient(ellipse at 85% 70%,#065f46 0%,transparent 45%),#021a0f',
+      emoji: '🌙' },
+    { keys: ['birthday','bday'],
+      grad: 'radial-gradient(ellipse at 20% 20%,#6b21a8 0%,transparent 55%),radial-gradient(ellipse at 80% 15%,#a21caf 0%,transparent 50%),radial-gradient(ellipse at 50% 85%,#f0abfc 0%,transparent 55%),radial-gradient(ellipse at 15% 80%,#db2777 0%,transparent 45%),#2e0a3a',
+      emoji: '🎂' },
+    { keys: ['office','team','town hall','townhall','annual'],
+      grad: 'radial-gradient(ellipse at 15% 20%,#1e1b4b 0%,transparent 55%),radial-gradient(ellipse at 80% 15%,#3730a3 0%,transparent 50%),radial-gradient(ellipse at 55% 85%,#818cf8 0%,transparent 55%),radial-gradient(ellipse at 85% 70%,#4338ca 0%,transparent 45%),#0f0e2a',
+      emoji: '📸' },
   ];
-  const DEFAULT_THEME = { grad: 'linear-gradient(140deg,#ea580c,#f97316,#fed7aa)', emoji: '🎞️' };
+  const DEFAULT_THEME = {
+    grad: 'radial-gradient(ellipse at 20% 25%,#c2440a 0%,transparent 55%),radial-gradient(ellipse at 80% 15%,#f97316 0%,transparent 50%),radial-gradient(ellipse at 55% 85%,#fed7aa 0%,transparent 55%),radial-gradient(ellipse at 85% 70%,#ea580c 0%,transparent 45%),#3a1200',
+    emoji: '🎞️'
+  };
 
   function themeFor(label) {
     const lo = label.toLowerCase();

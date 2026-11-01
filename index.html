@@ -162,7 +162,102 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* ── Grid ── */
+  /* ── Timeline layout ── */
+  .timeline {
+    margin-top: 32px;
+    position: relative;
+  }
+
+  .tl-year-block {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0 28px;
+    position: relative;
+  }
+
+  /* left column: year label + dot + line */
+  .tl-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: relative;
+    padding-top: 4px;
+  }
+
+  .tl-year-label {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+    line-height: 1;
+    /* entrance */
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .tl-year-block.visible .tl-year-label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .tl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    outline: 2px solid var(--accent);
+    margin-top: 10px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    /* entrance */
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.3s ease 0.15s, transform 0.35s cubic-bezier(.34,1.56,.64,1) 0.15s;
+  }
+
+  .tl-year-block.visible .tl-dot {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .tl-line {
+    flex: 1;
+    width: 2px;
+    background: var(--border);
+    margin-top: 6px;
+    align-self: stretch;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tl-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.7s cubic-bezier(.4,0,.2,1) 0.3s;
+  }
+
+  .tl-year-block.visible .tl-line::after {
+    transform: scaleY(1);
+  }
+
+  /* right column: cards */
+  .tl-right {
+    padding-bottom: 40px;
+  }
+
+  .tl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  /* ── Grid (kept for fallback) ── */
   .grid {
     margin-top: 16px;
     display: grid;
@@ -328,9 +423,16 @@
     animation: fade-in 0.4s ease 0.3s both;
   }
 
-  /* Card staggered entrance — delay set via --i in JS */
+  /* Card scroll-reveal — toggled by IntersectionObserver */
   .card {
-    animation: fade-up 0.45s cubic-bezier(.22,.68,0,1.2) calc(0.25s + var(--i,0) * 70ms) both;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.42s ease, transform 0.42s cubic-bezier(.22,.68,0,1.2);
+    transition-delay: calc(var(--i, 0) * 55ms);
+  }
+  .card.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* Emoji floats up on hover */
@@ -383,11 +485,12 @@
 
   @media (prefers-reduced-motion: reduce) {
     .card, .card-grad, .card-cta-arrow svg,
-    .page-eyebrow, .page-heading, .page-sub, .page-toolbar, .count-badge {
-      animation: none;
-      transition: none;
-      opacity: 1;
-      transform: none;
+    .page-eyebrow, .page-heading, .page-sub, .page-toolbar, .count-badge,
+    .tl-year-label, .tl-dot, .tl-line::after {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
     .sync-dot, .spinner { animation: none; }
   }
@@ -427,7 +530,7 @@
   </div>
 
   <div id="state" class="state"><div class="spinner"></div><span>Fetching albums…</span></div>
-  <div class="grid" id="grid"></div>
+  <div class="timeline" id="timeline"></div>
 </div>
 
 <script>
@@ -523,9 +626,56 @@
     return a;
   }
 
+  // ── IntersectionObserver for scroll-reveal ──
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+  }, { threshold: 0.08 });
+
+  function renderTimeline(albums) {
+    const tl = document.getElementById('timeline');
+
+    // group by year, sort descending
+    const byYear = {};
+    albums.forEach(a => {
+      const yr = a.year || (a.label.match(/(\d{4})/) || [])[1] || 'Other';
+      (byYear[yr] = byYear[yr] || []).push(a);
+    });
+    const years = Object.keys(byYear).sort((a,b) => b - a);
+
+    years.forEach(yr => {
+      const block = document.createElement('div');
+      block.className = 'tl-year-block';
+
+      // left: year + dot + line
+      const left = document.createElement('div');
+      left.className = 'tl-left';
+      left.innerHTML = `<div class="tl-year-label">${yr}</div><div class="tl-dot"></div><div class="tl-line"></div>`;
+
+      // right: cards grid
+      const right = document.createElement('div');
+      right.className = 'tl-right';
+      const grid = document.createElement('div');
+      grid.className = 'tl-grid';
+
+      byYear[yr].forEach((a, i) => {
+        const card = makeCard(a);
+        card.style.setProperty('--i', i);
+        grid.appendChild(card);
+        revealObs.observe(card);
+      });
+
+      right.appendChild(grid);
+      block.appendChild(left);
+      block.appendChild(right);
+      tl.appendChild(block);
+
+      // observe block for year label + dot + line animations
+      revealObs.observe(block);
+    });
+  }
+
   async function load() {
     const stateEl  = document.getElementById('state');
-    const gridEl   = document.getElementById('grid');
     const countEl  = document.getElementById('countBadge');
     const dotEl    = document.getElementById('syncDot');
     const labelEl  = document.getElementById('syncLabel');
@@ -537,11 +687,7 @@
 
       stateEl.hidden = true;
       countEl.textContent = '';
-      albums.forEach((a, i) => {
-        const card = makeCard(a);
-        card.style.setProperty('--i', i);
-        gridEl.appendChild(card);
-      });
+      renderTimeline(albums);
 
       const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       labelEl.textContent = `Live · ${t}`;

@@ -490,6 +490,41 @@
     color: #fff;
   }
 
+  .card-copy {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-dim);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    position: relative;
+  }
+  .card-copy:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .card-copy.copied { background: #dcfce7; border-color: #16a34a; color: #16a34a; }
+  .card-copy .copy-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 0.7rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .card-copy.copied .copy-tooltip { opacity: 1; }
+
   /* ── Motion ── */
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(14px); }
@@ -724,14 +759,42 @@
         <div class="card-divider"></div>
         <div class="card-cta">
           <span class="card-cta-label">Open in Google Photos</span>
-          <span class="card-cta-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="card-copy" title="Copy link" data-link="${link}">
+              <span class="copy-tooltip">Copied!</span>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M9 4V2.5A1.5 1.5 0 0 0 7.5 1h-5A1.5 1.5 0 0 0 1 2.5v5A1.5 1.5 0 0 0 2.5 9H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <span class="card-cta-arrow">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
         </div>
       </div>`;
+
+    // copy button — stop propagation so card link doesn't open
+    a.querySelector('.card-copy').addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      navigator.clipboard.writeText(btn.dataset.link).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = btn.dataset.link;
+        ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      });
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 1800);
+    });
+
     return a;
   }
 

@@ -1,0 +1,471 @@
+<title>OD Albums</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+<style>
+  /* Warm cream + white cards + orange accent — matches odmom.lovable.app */
+  :root {
+    --bg:          #f5f3ef;
+    --nav-bg:      #ffffff;
+    --card-bg:     #ffffff;
+    --border:      #e8e3db;
+    --fg:          #1a1714;
+    --fg-mid:      #6b6560;
+    --fg-dim:      #9e9891;
+    --accent:      #ea580c;
+    --accent-soft: #fff3ee;
+    --accent-text: #c2440a;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100%;
+    padding-left:  0;
+    padding-right: 0;
+    padding-block: 0;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-left:  max(20px, env(safe-area-inset-left,  0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    padding-block: 0;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .nav-logo-icon {
+    width: 30px; height: 30px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+
+  .nav-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .nav-logo-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  .nav-logo-sub {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .nav-spacer { flex: 1; }
+
+  .sync-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--fg-mid);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 12px;
+  }
+
+  .sync-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+    animation: blink 2.4s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── Page body ── */
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-left:  max(20px, env(safe-area-inset-left,  0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    padding-block: 36px 72px;
+  }
+
+  .page-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 6px;
+  }
+
+  .page-heading {
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    line-height: 1.1;
+  }
+
+  .page-sub {
+    font-size: 0.875rem;
+    color: var(--fg-mid);
+    margin-top: 4px;
+  }
+
+  .page-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .count-badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--fg-mid);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Grid ── */
+  .grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 24px -4px rgba(0,0,0,.10);
+    transform: translateY(-2px);
+    border-color: #d6d0c8;
+  }
+
+  .card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .card-thumb {
+    aspect-ratio: 16/9;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-grad {
+    position: absolute;
+    inset: 0;
+  }
+
+  .card-emoji {
+    position: relative;
+    z-index: 1;
+    font-size: 2.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.3));
+    user-select: none;
+  }
+
+  .card-body {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-year {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    background: var(--accent-soft);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .card-name {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  .card-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 14px 0;
+  }
+
+  .card-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .card-cta-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--fg-mid);
+  }
+
+  .card-cta-arrow {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-mid);
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .card:hover .card-cta-arrow {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── States ── */
+  .state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--fg-mid);
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .spinner {
+    width: 26px; height: 26px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .card-cta-arrow { transition: none; }
+    .sync-dot, .spinner { animation: none; }
+  }
+
+  @media (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    .nav-logo-sub { display: none; }
+  }
+</style>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-icon">OD</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">OD Albums</span>
+        <span class="nav-logo-sub">Okie Dokie</span>
+      </div>
+    </a>
+    <div class="nav-spacer"></div>
+    <div class="sync-pill">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncLabel">Loading…</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Page -->
+<div class="page">
+  <p class="page-eyebrow">Overview</p>
+  <h1 class="page-heading">Team Albums</h1>
+  <p class="page-sub">All our shared memories, in one place.</p>
+
+  <div class="page-toolbar">
+    <p class="count-badge" id="countBadge"></p>
+  </div>
+
+  <div id="state" class="state"><div class="spinner"></div><span>Fetching albums…</span></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+  const CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6Ezsy7Uw7n_CrGdToq2eVvDNS7tWF8L2H3DDyMWL2lk0LTrQEZxV_GRCzpL_vCyqkOXZv16BwgqIQ/pub?output=csv';
+
+  const THEMES = [
+    { keys: ['holi'],                                          grad: 'linear-gradient(140deg,#f9a8d4,#fde68a,#86efac,#93c5fd)', emoji: '🌈' },
+    { keys: ['kasol','manali','trek','hill','mountain'],       grad: 'linear-gradient(140deg,#052e16,#14532d,#4ade80)',          emoji: '🏔️' },
+    { keys: ['diwali','deepawali','deepavali'],                grad: 'linear-gradient(140deg,#713f12,#d97706,#fde68a)',          emoji: '🪔' },
+    { keys: ['christmas','xmas','new year'],                   grad: 'linear-gradient(140deg,#14532d,#dc2626,#fde68a)',          emoji: '🎄' },
+    { keys: ['beach','goa','sea','ocean'],                     grad: 'linear-gradient(140deg,#0c4a6e,#0284c7,#7dd3fc)',          emoji: '🌊' },
+    { keys: ['eid','ramadan'],                                 grad: 'linear-gradient(140deg,#052e16,#059669,#a7f3d0)',          emoji: '🌙' },
+    { keys: ['birthday','bday'],                               grad: 'linear-gradient(140deg,#4a044e,#a21caf,#f0abfc)',          emoji: '🎂' },
+    { keys: ['office','team','town hall','townhall','annual'], grad: 'linear-gradient(140deg,#1e1b4b,#3730a3,#818cf8)',          emoji: '📸' },
+  ];
+  const DEFAULT_THEME = { grad: 'linear-gradient(140deg,#ea580c,#f97316,#fed7aa)', emoji: '🎞️' };
+
+  function themeFor(label) {
+    const lo = label.toLowerCase();
+    for (const t of THEMES) if (t.keys.some(k => lo.includes(k))) return t;
+    return DEFAULT_THEME;
+  }
+
+  function splitRow(row) {
+    const cols = []; let cur = '', q = false;
+    for (let i = 0; i < row.length; i++) {
+      const c = row[i];
+      if (c === '"') { q = !q; continue; }
+      if (c === ',' && !q) { cols.push(cur); cur = ''; continue; }
+      cur += c;
+    }
+    cols.push(cur);
+    return cols;
+  }
+
+  function parseCSV(raw) {
+    const lines = raw.trim().split(/\r?\n/);
+    if (!lines.length) return [];
+    const hdrs = splitRow(lines[0]).map(h => h.toLowerCase().trim());
+    const fi = hdrs.indexOf('function'), li = hdrs.indexOf('link');
+    if (fi < 0 || li < 0) return [];
+    return lines.slice(1).map(l => {
+      const cols = splitRow(l);
+      return { label: (cols[fi]||'').trim(), link: (cols[li]||'').trim() };
+    }).filter(r => r.label && r.link);
+  }
+
+  function splitLabel(label) {
+    const m = label.match(/^(.*?)\s*(\d{4})$/);
+    return m ? { name: m[1].trim(), year: m[2] } : { name: label, year: null };
+  }
+
+  function makeCard({ label, link }) {
+    const { name, year } = splitLabel(label);
+    const { grad, emoji } = themeFor(label);
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = link;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.innerHTML = `
+      <div class="card-thumb">
+        <div class="card-grad" style="background:${grad}"></div>
+        <div class="card-emoji">${emoji}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          ${year ? `<span class="card-year">${year}</span>` : '<span></span>'}
+        </div>
+        <div class="card-name">${name}</div>
+        <div class="card-divider"></div>
+        <div class="card-cta">
+          <span class="card-cta-label">Open in Google Photos</span>
+          <span class="card-cta-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </div>`;
+    return a;
+  }
+
+  async function load() {
+    const stateEl  = document.getElementById('state');
+    const gridEl   = document.getElementById('grid');
+    const countEl  = document.getElementById('countBadge');
+    const dotEl    = document.getElementById('syncDot');
+    const labelEl  = document.getElementById('syncLabel');
+
+    try {
+      const res = await fetch(CSV);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const albums = parseCSV(await res.text());
+
+      stateEl.hidden = true;
+      countEl.textContent = `${albums.length} album${albums.length !== 1 ? 's' : ''} · synced from Google Sheets`;
+      albums.forEach(a => gridEl.appendChild(makeCard(a)));
+
+      const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      labelEl.textContent = `Live · ${t}`;
+    } catch (err) {
+      stateEl.innerHTML = `<span style="font-size:1.75rem">⚠️</span><span style="color:#dc2626">Could not load albums<br><small style="color:var(--fg-mid)">${err.message}</small></span>`;
+      dotEl.style.background = '#ef4444';
+      labelEl.textContent = 'Sync failed';
+    }
+  }
+
+  load();
+</script>

@@ -292,7 +292,7 @@
     text-align: center;
     padding: 0 16px;
     line-height: 1.15;
-    text-shadow: 0 2px 12px rgba(0,0,0,.35);
+    text-shadow: 0 1px 3px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.4);
     word-break: break-word;
     max-width: 90%;
   }
@@ -588,7 +588,7 @@
     a.innerHTML = `
       <div class="card-thumb">
         <div class="card-grad" style="background:${grad}"></div>
-        <div class="card-emoji">${emoji}</div>
+        <div class="card-place">${location || name}</div>
       </div>
       <div class="card-body">
         <div class="card-meta">

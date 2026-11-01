@@ -252,6 +252,17 @@
     letter-spacing: -0.01em;
   }
 
+  .card-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: var(--fg-mid);
+    margin-top: 5px;
+    font-weight: 500;
+  }
+  .card-location svg { flex-shrink: 0; opacity: .7; }
+
   .card-divider {
     height: 1px;
     background: var(--border);
@@ -424,7 +435,7 @@
 
   const THEMES = [
     { keys: ['holi'],                                          grad: 'linear-gradient(140deg,#f9a8d4,#fde68a,#86efac,#93c5fd)', emoji: '🌈' },
-    { keys: ['kasol','manali','trek','hill','mountain'],       grad: 'linear-gradient(140deg,#052e16,#14532d,#4ade80)',          emoji: '🏔️' },
+    { keys: ['kasol','manali','trek','hill','mountain','summer'],       grad: 'linear-gradient(140deg,#052e16,#14532d,#4ade80)',          emoji: '🏔️' },
     { keys: ['diwali','deepawali','deepavali'],                grad: 'linear-gradient(140deg,#713f12,#d97706,#fde68a)',          emoji: '🪔' },
     { keys: ['christmas','xmas','new year'],                   grad: 'linear-gradient(140deg,#14532d,#dc2626,#fde68a)',          emoji: '🎄' },
     { keys: ['beach','goa','sea','ocean'],                     grad: 'linear-gradient(140deg,#0c4a6e,#0284c7,#7dd3fc)',          emoji: '🌊' },
@@ -457,14 +468,25 @@
     if (!lines.length) return [];
     const hdrs = splitRow(lines[0]).map(h => h.toLowerCase().trim());
     const fi = hdrs.indexOf('function'), li = hdrs.indexOf('link');
+    const yi = hdrs.indexOf('year'),      loi = hdrs.indexOf('location');
     if (fi < 0 || li < 0) return [];
     return lines.slice(1).map(l => {
       const cols = splitRow(l);
-      return { label: (cols[fi]||'').trim(), link: (cols[li]||'').trim() };
+      return {
+        label:    (cols[fi]  ||'').trim(),
+        link:     (cols[li]  ||'').trim(),
+        year:     yi  >= 0 ? (cols[yi]  ||'').trim() : null,
+        location: loi >= 0 ? (cols[loi] ||'').trim() : null,
+      };
     }).filter(r => r.label && r.link);
   }
 
-  function splitLabel(label) {
+  function splitLabel(label, yearCol) {
+    // If sheet provides a year column, strip year from function name
+    if (yearCol) {
+      const stripped = label.replace(/\s*\d{4}$/, '').trim();
+      return { name: stripped || label, year: yearCol };
+    }
     const m = label.match(/^(.*?)\s*(\d{4})$/);
     return m ? { name: m[1].trim(), year: m[2] } : { name: label, year: null };
   }

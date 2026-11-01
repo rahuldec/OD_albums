@@ -294,6 +294,65 @@
     color: #fff;
   }
 
+  /* ── Motion ── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-5px); }
+  }
+
+  /* Header entrance */
+  .page-eyebrow {
+    animation: fade-up 0.45s cubic-bezier(.22,.68,0,1.2) 0.05s both;
+  }
+  .page-heading {
+    animation: fade-up 0.45s cubic-bezier(.22,.68,0,1.2) 0.12s both;
+  }
+  .page-sub {
+    animation: fade-up 0.45s cubic-bezier(.22,.68,0,1.2) 0.18s both;
+  }
+  .page-toolbar {
+    animation: fade-in 0.4s ease 0.3s both;
+  }
+
+  /* Card staggered entrance — delay set via --i in JS */
+  .card {
+    animation: fade-up 0.45s cubic-bezier(.22,.68,0,1.2) calc(0.25s + var(--i,0) * 70ms) both;
+  }
+
+  /* Emoji floats up on hover */
+  .card:hover .card-emoji {
+    animation: float 1.6s ease-in-out infinite;
+  }
+
+  /* Gradient zooms slightly on hover */
+  .card-grad {
+    transition: transform 0.4s ease;
+  }
+  .card:hover .card-grad {
+    transform: scale(1.06);
+  }
+
+  /* Arrow slides right on hover */
+  .card-cta-arrow svg {
+    transition: transform 0.18s ease;
+  }
+  .card:hover .card-cta-arrow svg {
+    transform: translateX(2px);
+  }
+
+  /* Count fades in after cards */
+  .count-badge {
+    animation: fade-in 0.4s ease 0.6s both;
+  }
+
   /* ── States ── */
   .state {
     text-align: center;
@@ -317,8 +376,13 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (prefers-reduced-motion: reduce) {
-    .card { transition: none; }
-    .card-cta-arrow { transition: none; }
+    .card, .card-grad, .card-cta-arrow svg,
+    .page-eyebrow, .page-heading, .page-sub, .page-toolbar, .count-badge {
+      animation: none;
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
     .sync-dot, .spinner { animation: none; }
   }
 
@@ -456,7 +520,11 @@
 
       stateEl.hidden = true;
       countEl.textContent = `${albums.length} album${albums.length !== 1 ? 's' : ''} · synced from Google Sheets`;
-      albums.forEach(a => gridEl.appendChild(makeCard(a)));
+      albums.forEach((a, i) => {
+        const card = makeCard(a);
+        card.style.setProperty('--i', i);
+        gridEl.appendChild(card);
+      });
 
       const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       labelEl.textContent = `Live · ${t}`;

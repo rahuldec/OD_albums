@@ -19,6 +19,7 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
 
   body {
     font-family: 'Inter', system-ui, sans-serif;
@@ -519,7 +520,7 @@
       const albums = parseCSV(await res.text());
 
       stateEl.hidden = true;
-      countEl.textContent = `${albums.length} album${albums.length !== 1 ? 's' : ''} · synced from Google Sheets`;
+      countEl.textContent = '';
       albums.forEach((a, i) => {
         const card = makeCard(a);
         card.style.setProperty('--i', i);

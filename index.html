@@ -785,6 +785,32 @@
     .grid { grid-template-columns: 1fr; }
     .nav-logo-sub { display: none; }
   }
+  /* ── Back to top ── */
+  .back-top {
+    position: fixed;
+    bottom: max(28px, env(safe-area-inset-bottom, 0px));
+    right: max(24px, env(safe-area-inset-right, 0px));
+    z-index: 50;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.25s, transform 0.25s, background 0.15s;
+    pointer-events: none;
+  }
+  .back-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .back-top:hover { background: var(--accent-text); }
+
 </style>
 
 <!-- Nav -->
@@ -809,6 +835,9 @@
     </button>
   </div>
 </nav>
+<button class="back-top" id="backTop" aria-label="Back to top" hidden>
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 12V4M4 8l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 
 <!-- Page -->
 <div class="page">
@@ -1201,6 +1230,30 @@
     searchInput.focus();
     applyFilters();
   });
+
+  // / to focus search, Esc to clear
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      searchQuery = '';
+      searchClear.hidden = true;
+      searchInput.blur();
+      applyFilters();
+    }
+  });
+
+  // Back to top
+  const backTop = document.getElementById('backTop');
+  backTop.hidden = false;
+  window.addEventListener('scroll', () => {
+    backTop.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   load();
 </script>

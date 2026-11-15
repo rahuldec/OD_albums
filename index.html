@@ -1179,18 +1179,17 @@
       document.getElementById('statYears').textContent     = `${uniqueYears} year${uniqueYears !== 1 ? 's' : ''}`;
       document.getElementById('statsStrip').hidden = false;
 
-      // Visitor counter — increments on every page load
-      fetch('/api/visits')
-        .then(r => r.json())
-        .then(d => {
-          const count = d.count;
-          if (!count) return;
-          const fmt = count >= 1000 ? (count/1000).toFixed(1) + 'k' : count.toString();
-          document.getElementById('statVisits').textContent = fmt + ' visit' + (count !== 1 ? 's' : '');
-          document.getElementById('statVisits').hidden = false;
-          document.querySelector('.visitDot').hidden = false;
-        })
-        .catch(() => {});
+      // Visitor counter — auto-increments, zero setup
+      const _hitsEl = document.getElementById('statVisits');
+      const _hitsImg = new Image();
+      _hitsImg.style.cssText = 'height:18px;vertical-align:middle;border-radius:4px;';
+      _hitsImg.onload = () => {
+        _hitsEl.innerHTML = '';
+        _hitsEl.appendChild(_hitsImg);
+        _hitsEl.hidden = false;
+        document.querySelector('.visitDot').hidden = false;
+      };
+      _hitsImg.src = 'https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Falbums.okiedokiepay.com&count_bg=%23ea580c&title_bg=%23e8e3db&icon=eye&icon_color=%23ea580c&title=visits&edge_flat=true';
 
       buildFilterTabs();
       renderTimeline(allAlbums);

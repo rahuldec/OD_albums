@@ -1180,7 +1180,7 @@
       document.getElementById('statsStrip').hidden = false;
 
       // Visitor counter — increments on every page load
-      fetch('https://api.counterapi.dev/v1/od-albums-okiedokiepay/visits/up')
+      fetch('/api/visits')
         .then(r => r.json())
         .then(d => {
           const count = d.count;
